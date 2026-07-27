@@ -1,0 +1,134 @@
+
+-- Student Table
+CREATE TABLE Student (
+    st_id INT PRIMARY KEY,
+    full_name VARCHAR(100),
+    address VARCHAR(255),
+    dob DATE,
+    whatsapp_no VARCHAR(15),
+    guardian_name VARCHAR(100),
+    guardian_contact VARCHAR(15),
+    email VARCHAR(100),
+    password VARCHAR(50)
+);
+
+-- Subject Table
+CREATE TABLE Subject (
+    subject_id INT PRIMARY KEY,
+    name VARCHAR(100)
+);
+
+-- Teacher Table
+CREATE TABLE Teacher (
+    teacher_id INT PRIMARY KEY,
+    name VARCHAR(100),
+    address VARCHAR(255),
+    dob DATE,
+    contact_no VARCHAR(15),
+    email VARCHAR(100),
+    higher_qualification VARCHAR(100),
+    password VARCHAR(50)
+);
+
+-- Class Table
+CREATE TABLE Class (
+    class_id INT PRIMARY KEY,
+    name VARCHAR(100)
+);
+
+-- Payment Table
+CREATE TABLE Payment (
+    payment_id INT PRIMARY KEY,
+    payment_amount DECIMAL(10,2),
+    date DATE,
+    st_id INT,
+    FOREIGN KEY (st_id) REFERENCES Student(st_id)
+);
+
+-- Student selects Subject (Selects Table)
+CREATE TABLE St_select_sub (
+    st_id INT,
+    subject_id INT,
+    PRIMARY KEY (st_id, subject_id),
+    FOREIGN KEY (st_id) REFERENCES Student(st_id),
+    FOREIGN KEY (subject_id) REFERENCES Subject(subject_id)
+);
+
+-- Teacher teaches Subject (Teach Table)
+CREATE TABLE Te_teach_sub (
+    teacher_id INT,
+    subject_id INT,
+    PRIMARY KEY (teacher_id, subject_id),
+    FOREIGN KEY (teacher_id) REFERENCES Teacher(teacher_id),
+    FOREIGN KEY (subject_id) REFERENCES Subject(subject_id)
+);
+
+-- Subject for Class Table
+CREATE TABLE Subject_For_Class (
+    subject_id INT,
+    class_id INT,
+    year INT,
+    PRIMARY KEY (subject_id, class_id),
+    FOREIGN KEY (subject_id) REFERENCES Subject(subject_id),
+    FOREIGN KEY (class_id) REFERENCES Class(class_id)
+);
+
+-- Class for Teacher Table
+CREATE TABLE Class_For_Teacher (
+    teacher_id INT,
+    class_id INT,
+    year INT,
+    PRIMARY KEY (teacher_id, class_id),
+    FOREIGN KEY (teacher_id) REFERENCES Teacher(teacher_id),
+    FOREIGN KEY (class_id) REFERENCES Class(class_id)
+);
+
+CREATE TABLE users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    role ENUM('student', 'teacher') NOT NULL,
+    status ENUM('pending', 'approved', 'rejected') DEFAULT 'pending',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE resources (
+    resource_id INT AUTO_INCREMENT PRIMARY KEY,
+    file_name VARCHAR(255),
+    file_path VARCHAR(255),
+    subject_id INT,
+    class_id INT,
+    uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (subject_id) REFERENCES subject(subject_id),
+    FOREIGN KEY (class_id) REFERENCES class(class_id)
+);
+
+CREATE TABLE timetable (
+    timetable_id INT AUTO_INCREMENT PRIMARY KEY,
+    class_id INT NOT NULL,
+    subject_id INT NOT NULL,
+    teacher_id INT NOT NULL,
+    day_of_week ENUM('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday') NOT NULL,
+    start_time TIME NOT NULL,
+    end_time TIME NOT NULL,
+    year INT NOT NULL,
+
+    FOREIGN KEY (class_id) REFERENCES class(class_id),
+    FOREIGN KEY (subject_id) REFERENCES subject(subject_id),
+    FOREIGN KEY (teacher_id) REFERENCES teacher(teacher_id)
+);
+
+CREATE TABLE Payments (
+    payment_id INT AUTO_INCREMENT PRIMARY KEY,
+    student_id INT,
+    teacher_id INT,
+    subject_id INT,
+    amount DECIMAL(10,2),
+    payment_date DATE,
+    payment_month YEAR,
+    payment_mode ENUM('offline', 'online'),
+    FOREIGN KEY (student_id) REFERENCES student(st_id),
+    FOREIGN KEY (teacher_id) REFERENCES teacher(teacher_id),
+    FOREIGN KEY (subject_id) REFERENCES subject(subject_id)
+);
